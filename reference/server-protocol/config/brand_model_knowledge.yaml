@@ -1,0 +1,128 @@
+# Brand/Model Knowledge Base
+# This file learns from your corrections and helps the LLM parse device names correctly
+
+# Full extraction examples (with all fields)
+full_examples:
+  - input: "iPhone 7 broken screen for battery, price 75"
+    brand: "Apple"
+    model: "iPhone 7"
+    problem: "battery replacement"
+    deviceCondition: "Cracked Screen, "
+    totalPrice: 75.0
+    
+  - input: "S21 Ultra for charging port"
+    brand: "Samsung"
+    model: "Galaxy S21 Ultra"
+    problem: "charging port repair"
+    deviceCondition: null
+    totalPrice: null
+    
+  - input: "book dead iPhone 12 for screen and battery, password 1234, 150 pounds"
+    brand: "Apple"
+    model: "iPhone 12"
+    problem: "screen and battery replacement"
+    deviceCondition: "Dead device, "
+    devicePassword: "1234"
+    totalPrice: 150.0
+    
+  - input: "dead iPhone 13 cracked back and screen for repair, with case and charger"
+    brand: "Apple"
+    model: "iPhone 13"
+    problem: "screen and back repair"
+    deviceCondition: "Dead device, Cracked Screen, Cracked Back, "
+    accessories: "With Case, With Charger, "
+    totalPrice: null
+
+examples:
+  # Samsung devices
+  - input: "S24"
+    brand: "Samsung"
+    model: "Galaxy S24"
+  - input: "S24 Ultra"
+    brand: "Samsung"
+    model: "Galaxy S24 Ultra"
+  - input: "S23"
+    brand: "Samsung"
+    model: "Galaxy S23"
+  - input: "S21"
+    brand: "Samsung"
+    model: "Galaxy S21"
+  - input: "S21 Ultra"
+    brand: "Samsung"
+    model: "Galaxy S21 Ultra"
+  - input: "S21 Plus"
+    brand: "Samsung"
+    model: "Galaxy S21 Plus"
+  - input: "A12"
+    brand: "Samsung"
+    model: "Galaxy A12"
+  - input: "A54"
+    brand: "Samsung"
+    model: "Galaxy A54"
+  
+  # Apple devices
+  - input: "iPhone 15"
+    brand: "Apple"
+    model: "iPhone 15"
+  - input: "iPhone 14 Pro"
+    brand: "Apple"
+    model: "iPhone 14 Pro"
+  - input: "iPad Pro"
+    brand: "Apple"
+    model: "iPad Pro"
+  - input: "MacBook Air"
+    brand: "Apple"
+    model: "MacBook Air"
+  
+  # Google devices
+  - input: "Pixel 7"
+    brand: "Google"
+    model: "Pixel 7"
+  - input: "Pixel 8 Pro"
+    brand: "Google"
+    model: "Pixel 8 Pro"
+  
+  # Other brands (when only brand mentioned)
+  - input: "OPPO"
+    brand: "OPPO"
+    model: "Unknown"
+  - input: "OnePlus"
+    brand: "OnePlus"
+    model: "Unknown"
+
+# Rules for the LLM
+parsing_rules:
+  - "Samsung models starting with S or A (e.g., S24, A12, S21) should have 'Galaxy' prefix in model (e.g., 'Galaxy S21 Ultra')"
+  - "Apple products (iPhone, iPad, MacBook, iMac) should have brand='Apple'"
+  - "Google Pixel devices should have brand='Google'"
+  - "HP laptops (Elite, ProBook, Pavilion) should have brand='HP' and preserve full model name"
+  - "If only brand name is mentioned without model, set model='Unknown'"
+  - "Preserve the original product line name (e.g., 'iPhone 15', not just '15')"
+  - "Always infer brand from common model names (iPhone → Apple, S21 → Samsung)"
+  
+# CRITICAL: Device condition and accessories MUST use EXACT strings from API
+# These are the ONLY valid values - any variation will be rejected by the server
+
+allowed_conditions:
+  - "Dead device"          # dead / won't turn on / not powering on
+  - "Cracked Screen"       # broken screen / cracked screen / screen damage
+  - "Cracked Back"         # broken back / cracked back / back damage
+  
+allowed_accessories:
+  - "With Bag"            # has bag / came with bag / with bag
+  - "With Charger"        # has charger / came with charger / with charger
+  - "With Case"           # has case / came with case / with case
+
+# Multiple values should be comma-separated with space after comma
+# Example: "Cracked Screen, Dead device, "
+# Note: API format includes trailing comma and space
+
+condition_mapping:
+  - "dead / won't turn on / not powering on / not turning on → 'Dead device'"
+  - "broken screen / cracked screen / screen cracked / screen damage → 'Cracked Screen'"
+  - "broken back / cracked back / back cracked / back damage → 'Cracked Back'"
+  
+accessory_mapping:
+  - "with bag / has bag / came with bag → 'With Bag'"
+  - "with charger / has charger / came with charger → 'With Charger'"
+  - "with case / has case / came with case → 'With Case'"

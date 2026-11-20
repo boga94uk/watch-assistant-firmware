@@ -1,0 +1,4 @@
+pocket-tts
+numpy
+scipy
+torch

@@ -1,0 +1,78 @@
+
+# Common transcription errors and their corrections
+
+# This helps the LLM understand voice-to-text mistakes
+
+common_errors:
+  # Screen/Scream confusion
+  - incorrect: "scream"
+    correct: "screen"
+    context: "Common when user says 'screen' but it's transcribed as 'scream'"
+    applies_to:
+      command: "book"
+      parameter: "problem"
+    examples:
+      - "It's for scream to It's for screen"
+      - "scream repair to screen repair"
+      - "scream replacement to screen replacement"
+  
+  # Battery/Bakery confusion
+  - incorrect: "bakery"
+    correct: "battery"
+    context: "Common when user says 'battery' but it's transcribed as 'bakery'"
+    applies_to:
+      command: "book"
+      parameter: "problem"
+    examples:
+      - "bakery replacement to battery replacement"
+      - "bakery issue to battery issue"
+  
+  # Charging/Chargin confusion
+  - incorrect: "chargin"
+    correct: "charging"
+    context: "Missing 'g' at end"
+    applies_to:
+      command: "book"
+      parameter: "problem"
+    examples:
+      - "chargin port to charging port"
+  
+  # Water/Walter confusion
+  - incorrect: "walter"
+    correct: "water"
+    applies_to:
+      command: "book"
+      parameter: "problem"
+    examples:
+      - "walter damage to water damage"
+  - incorrect: "screening"
+    correct: "screen"
+    applies_to:
+      command: "book"
+      parameter: "problem"
+    examples:
+      - "Book iPhone 12 for screening → screen"
+
+# Number pronunciations
+number_patterns:
+  - spoken: "one two two seven"
+    transcribed: "1 2 2 7"
+    transcribed: "1.2.2.7"
+    transcribed: "1,2,2,7"
+    correct: "1227"
+  - spoken: "twelve twenty-seven"
+    transcribed: "12 27"
+    transcribed: "12.27"
+    transcribed: "12,27"
+    correct: "1227"
+
+# Device model corrections
+device_models:
+  - incorrect: "I phone"
+    correct: "iPhone"
+  - incorrect: "eye phone"
+    correct: "iPhone"
+  - incorrect: "galaxy s twenty four"
+    correct: "Galaxy S24"
+  - incorrect: "s twenty 4 ultra"
+    correct: "S24 Ultra"

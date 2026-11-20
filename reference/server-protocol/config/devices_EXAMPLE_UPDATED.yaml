@@ -1,0 +1,79 @@
+# ============================================
+# Updated devices.yaml with device_secret field
+# ============================================
+# 
+# New field: device_secret
+# - Used for HMAC-SHA256 signature validation
+# - If omitted, defaults to MAC address (matches ESP32 default)
+# - For production, use unique secrets per device
+# - Must match the secret used on ESP32 side
+#
+# ============================================
+
+devices:
+  # Example 1: Using MAC address as secret (default behavior)
+  AA:BB:CC:DD:EE:FF:
+    enabled: true
+    staff_name: Development Device
+    phoneshop_username: your_username_here
+    phoneshop_password: your_password_here
+    registered_at: '2025-10-10'
+    device_secret: 'AA:BB:CC:DD:EE:FF'  # ✅ Same as Device-ID (default)
+  
+  # Example 2: Using custom secret (recommended for production)
+  AA:BB:CC:DD:EE:01:
+    enabled: true
+    staff_name: Production Device 1
+    phoneshop_username: staff1
+    phoneshop_password: pass123
+    registered_at: '2025-10-15'
+    device_secret: 'my-custom-secret-key-12345'  # ✅ Custom secret
+  
+  # Example 3: Omit device_secret (will default to MAC address)
+  11:22:33:44:55:66:
+    enabled: true
+    staff_name: Legacy Device
+    phoneshop_username: legacy_user
+    phoneshop_password: legacy_pass
+    registered_at: '2025-10-01'
+    # device_secret omitted - will use '11:22:33:44:55:66' as default
+  
+  # Example 4: Disabled device (won't authenticate even with valid signature)
+  FF:FF:FF:FF:FF:FF:
+    enabled: false  # ❌ Disabled
+    staff_name: Disabled Device
+    phoneshop_username: disabled
+    phoneshop_password: disabled
+    registered_at: '2025-10-15'
+    device_secret: 'FF:FF:FF:FF:FF:FF'
+
+registration:
+  default_enabled: true
+  require_approval: false
+
+# ============================================
+# IMPORTANT NOTES:
+# ============================================
+#
+# 1. Device Secret Matching:
+#    - ESP32 uses MAC address as secret by default
+#    - Server must use same secret in device_secret field
+#    - If using custom secrets, update ESP32 code to match
+#
+# 2. Security Best Practices:
+#    - Use unique secrets per device in production
+#    - Store secrets securely (not in git)
+#    - Rotate secrets periodically
+#    - Use environment variables or secret management
+#
+# 3. Backward Compatibility:
+#    - Old ESP32 firmware (no signatures) still works
+#    - Server logs warning for legacy auth
+#    - Update all devices then remove compatibility
+#
+# 4. Secret Rotation:
+#    - Change device_secret on server
+#    - Update ESP32 firmware with new secret
+#    - Both must match for authentication to work
+#
+# ============================================

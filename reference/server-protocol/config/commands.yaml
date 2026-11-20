@@ -1,0 +1,191 @@
+# Simplified Commands Configuration  
+# ONLY regex-based ticket mutation commands
+# All other commands (book, sell, invoice) handled by UnifiedCommandExtractor
+# NOTE: command_schema.yaml contains full command definitions
+
+commands:
+  # Ticket mutations - simple regex patterns
+  ticket_start:
+    pattern: 'ticket\s+([\d\s\.,]+)\s+(?:start|started|begin)'
+    required_params:
+      - ticket_id
+    api_endpoint: "/YOUR_SHOP_API_PATH?id={ticket_id}"
+    api_method: "PUT"
+    requires_confirmation: true
+    confirmation_template: "Start work on ticket {ticket_id}?"
+    success_message: "Ticket {ticket_id} started"
+
+  ticket_complete:
+    pattern: 'ticket\s+([\d\s\.,]+)\s+(?:complete|completed|done|fixed)'
+    required_params:
+      - ticket_id
+    api_endpoint: "/YOUR_SHOP_API_PATH?id={ticket_id}&success=true"
+    api_method: "PUT"
+    requires_confirmation: true
+    confirmation_template: "Mark ticket {ticket_id} as completed successfully?"
+    success_message: "Ticket {ticket_id} marked as complete"
+
+  ticket_unfixable:
+    pattern: 'ticket\s+([\d\s\.,]+)\s+(?:unfixable|unrepairable|cannot\s+fix|can''t\s+fix|failed)'
+    required_params:
+      - ticket_id
+    api_endpoint: "/YOUR_SHOP_API_PATH?id={ticket_id}&success=false"
+    api_method: "PUT"
+    requires_confirmation: true
+    confirmation_template: "Mark ticket {ticket_id} as unfixable?"
+    success_message: "Ticket {ticket_id} marked as unfixable"
+
+  ticket_collected:
+    pattern: 'ticket\s+([\d\s\.,]+)\s+(?:collected|picked\s+up|customer\s+collected)'
+    required_params:
+      - ticket_id
+    api_endpoint: "/YOUR_SHOP_API_PATH?id={ticket_id}"
+    api_method: "PUT"
+    requires_confirmation: true
+    confirmation_template: "Mark ticket {ticket_id} as collected and create invoice?"
+    success_message: "Ticket {ticket_id} marked as collected"
+    auto_print: true
+
+  ticket_freeze:
+    pattern: 'ticket\s+([\d\s\.,]+)\s+(?:freeze|frozen|pause|paused|hold)'
+    required_params:
+      - ticket_id
+    api_endpoint: "/YOUR_SHOP_API_PATH?id={ticket_id}"
+    api_method: "PUT"
+    requires_confirmation: true
+    confirmation_template: "Freeze ticket {ticket_id}?"
+    success_message: "Ticket {ticket_id} frozen"
+
+  ticket_cancel:
+    pattern: 'ticket\s+([\d\s\.,]+)\s+(?:cancel|cancelled|abort)'
+    required_params:
+      - ticket_id
+    api_endpoint: "/YOUR_SHOP_API_PATH?id={ticket_id}"
+    api_method: "PUT"
+    requires_confirmation: true
+    confirmation_template: "Cancel ticket {ticket_id}?"
+    success_message: "Ticket {ticket_id} cancelled"
+
+  print_ticket:
+    pattern: 'print\s+ticket\s+([\d\s\.,]+)'
+    required_params:
+      - ticket_id
+    api_endpoint: "/YOUR_SHOP_API_PATH?ticketId={ticket_id}"
+    api_method: "POST"
+    requires_confirmation: true
+    confirmation_template: "Print receipt for ticket {ticket_id}?"
+    success_message: "Printing ticket {ticket_id}"
+    auto_print: true
+
+  print_tag:
+    pattern: 'print\s+(?:tag|label)\s+(?:for\s+)?ticket\s+([\d\s\.,]+)'
+    required_params:
+      - ticket_id
+    api_endpoint: "/YOUR_SHOP_API_PATH?ticketId={ticket_id}"
+    api_method: "POST"
+    requires_confirmation: true
+    confirmation_template: "Print repair tag for ticket {ticket_id}?"
+    success_message: "Printing tag for ticket {ticket_id}"
+    auto_print: true
+
+  whats_next:
+    pattern: 'what(?:''s|\s+is)\s+next|next\s+(?:ticket|repair)|pending\s+(?:tickets|repairs)'
+    required_params: []
+    api_endpoint: "/YOUR_SHOP_API_PATH"
+    api_method: "GET"
+    requires_confirmation: false
+    success_message: null
+
+  # Volume and brightness removed - now handled on-device
+
+  test:
+    pattern: 'test\s+(confirmation|screen|display)'
+    required_params: []
+    api_endpoint: "/api/test/mock"
+    api_method: "GET"
+    requires_confirmation: true
+    confirmation_template: "Test confirmation screen - Press top button to confirm, bottom to decline."
+
+  test_ask:
+    pattern: 'test\s+ask'
+    required_params: []
+    action: "ask"
+    ask_question: "Did that work?"
+    success_message: "Got it, thanks for letting me know."
+
+  test_confirm:
+    pattern: 'test\s+confirm'
+    required_params: []
+    requires_confirmation: true
+    confirmation_template: "Confirm command ask - press top to confirm, bottom to cancel."
+    success_message: "Confirmed!"
+    cancel_message: null
+
+  test_connection:
+    pattern: 'test\s+connection'
+    required_params: []
+    requires_confirmation: false
+    action: "test_phoneshop"
+    success_message: "Phoneshop connection successful!"
+    error_message: "Phoneshop connection failed"
+
+  help:
+    pattern: 'help|how\s+do\s+i|what\s+can\s+you\s+do'
+    required_params: []
+    requires_confirmation: false
+    action: "ai_help"
+    success_message: null
+
+  repeat:
+    pattern: 'repeat\s+all|repeat\s+everything|repeat\s+conversation'
+    required_params: []
+    requires_confirmation: false
+    action: "repeat_all"
+    success_message: null
+
+  repeat_last:
+    pattern: 'repeat|say\s+again|what\s+did\s+you\s+say'
+    required_params: []
+    requires_confirmation: false
+    action: "repeat_last"
+    success_message: null
+
+help_context: |
+  You are a helpful assistant for an ESP32-S3 voice-controlled smartwatch used in a phone repair shop.
+  
+  AVAILABLE COMMANDS:
+  
+  BOOKING & SALES:
+  - Book repair: "Book [brand] [model] for [problem]" or "Book for [problem]"
+  - Sell device: "Sell [brand] [model] [storage] [color] [price]"
+  
+  TICKET MANAGEMENT:
+  - Check status: "Status [ticket number]" or "Ticket [number]"
+  - Start repair: "Ticket [number] started"
+  - Complete repair: "Ticket [number] completed" or "Ticket [number] fixed"
+  - Mark unfixable: "Ticket [number] unfixable" or "Ticket [number] cannot fix"
+  - Device collected: "Ticket [number] collected"
+  - Freeze/pause: "Ticket [number] freeze"
+  - Cancel: "Ticket [number] cancel"
+  - Pending tickets: "What's next?" or "Next ticket" or "Pending tickets"
+  
+  PRINTING:
+  - Print receipt: "Print ticket [number]"
+  - Print repair tag: "Print tag for ticket [number]" or "Print label ticket [number]"
+  
+  DEVICE CONTROL:
+  - Volume: "Volume up/down/[0-100]"
+  - Brightness: "Brightness up/down/[0-100]"
+  - Repeat: "Repeat" or "Repeat all"
+  
+  SYSTEM:
+  - Test connection: "Test connection" (tests Phoneshop API)
+  - Help: "Help" or "What can you do?"
+  
+  HOW TO USE:
+  1. Hold top button to record
+  2. Speak command clearly
+  3. Release button
+  4. Confirm with top button if asked
+  
+  Answer questions naturally and helpfully. Be concise but informative.

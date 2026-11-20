@@ -1,0 +1,26 @@
+# Example only. Copy these fields into voice-assistant-server config/devices.yaml
+# and replace every placeholder. See SETUP.md at the repo root. Do not commit real values.
+# AA:BB:CC:DD:EE:FF and AA:BB:CC:DD:EE:01 stand in for watch Wi-Fi MACs.
+# The secret of 64 zeros must be replaced with a real 64-hex secret, the same value on that watch.
+devices:
+  AA:BB:CC:DD:EE:01:
+    device_id: AA:BB:CC:DD:EE:01
+    enabled: true
+    last_seen: '2025-11-03T20:21:38.816725'
+    phoneshop_password: YOUR_PHONESHOP_PASSWORD
+    phoneshop_username: YOUR_PHONESHOP_USERNAME
+    registered_at: '2025-11-03T20:21:38.816725'
+    secret: 0000000000000000000000000000000000000000000000000000000000000000
+    staff_name: 'Varna ESP Assistant '
+  AA:BB:CC:DD:EE:FF:
+    device_id: AA:BB:CC:DD:EE:FF
+    enabled: true
+    last_seen: '2025-10-26T12:40:17.573649'
+    phoneshop_password: YOUR_PHONESHOP_PASSWORD
+    phoneshop_username: YOUR_PHONESHOP_USERNAME
+    registered_at: '2025-10-26T12:40:17.573649'
+    secret: 0000000000000000000000000000000000000000000000000000000000000000
+    staff_name: ESP Assistant
+registration:
+  default_enabled: true
+  require_approval: false

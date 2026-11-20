@@ -1,0 +1,355 @@
+{
+  "metadata": {
+    "purpose": "Complete field reference for LLM API integration",
+    "generated": "2025-11-08",
+    "source": "Phoneshop API + test results"
+  },
+  
+  "ticket_fields": {
+    "create_ticket": {
+      "endpoint": "POST /YOUR_SHOP_API_PATH",
+      "required_fields": {
+        "deviceBrand": {
+          "type": "string",
+          "description": "Device brand (e.g., Apple, Samsung, Nokia)",
+          "example": "Samsung",
+          "validation": "Must exist in brand list from GET /YOUR_SHOP_API_PATH"
+        },
+        "deviceModel": {
+          "type": "string",
+          "description": "Device model (e.g., Galaxy S21, iPhone 14)",
+          "example": "Galaxy S21",
+          "validation": "Should exist in model list for the brand"
+        },
+        "problemExplanation": {
+          "type": "string",
+          "description": "Description of the problem/repair needed",
+          "example": "Screen cracked, not turning on",
+          "max_length": 500
+        },
+        "status": {
+          "type": "enum",
+          "description": "Ticket status",
+          "default": "PENDING",
+          "allowed_values": ["PENDING", "IN_PROGRESS", "FINISHED", "CANCELLED", "FROZEN"],
+          "note": "Voice bookings always start as PENDING"
+        },
+        "deviceLocation": {
+          "type": "enum",
+          "description": "Physical location of the device",
+          "default": "IN_THE_FRONT",
+          "allowed_values": [
+            "IN_THE_FRONT",
+            "IN_THE_BACK", 
+            "IN_THE_LAB",
+            "AT_THE_FRONT",
+            "With customer",
+            "Fonesmart",
+            "Sent To Charlshouse"
+          ],
+          "source": "GET /YOUR_SHOP_API_PATH"
+        },
+        "withClient": {
+          "type": "boolean",
+          "description": "Whether customer is waiting",
+          "default": false,
+          "note": "Voice bookings always false (device left at shop)"
+        },
+        "timestamp": {
+          "type": "ISO8601",
+          "description": "When ticket was created",
+          "format": "YYYY-MM-DDTHH:mm:ss.SSSZ",
+          "example": "2025-11-07T23:01:34.427Z",
+          "note": "UTC timezone, milliseconds with 3 digits"
+        },
+        "deadline": {
+          "type": "ISO8601",
+          "description": "Expected completion time",
+          "format": "YYYY-MM-DDTHH:mm:ss.SSSZ",
+          "example": "2025-11-08T00:01:34.427Z",
+          "note": "Typically timestamp + 1 hour for voice bookings"
+        }
+      },
+      "optional_fields": {
+        "deviceCondition": {
+          "type": "string",
+          "description": "Physical condition of device",
+          "example": "Scratched screen, minor dents",
+          "max_length": 200
+        },
+        "accessories": {
+          "type": "string",
+          "description": "Accessories left with device",
+          "example": "Charger, case, SIM card",
+          "max_length": 200
+        },
+        "totalPrice": {
+          "type": "float",
+          "description": "Total repair cost",
+          "example": 50.0,
+          "note": "Can be set later via update endpoint"
+        },
+        "deposit": {
+          "type": "float",
+          "description": "Deposit paid by customer",
+          "example": 10.0,
+          "note": "Can be set later via update endpoint"
+        },
+        "devicePassword": {
+          "type": "string",
+          "description": "Device unlock code/PIN",
+          "example": "1234",
+          "max_length": 50
+        },
+        "notes": {
+          "type": "string",
+          "description": "Additional notes for the repair",
+          "example": "Customer wants data backup first",
+          "max_length": 1000
+        },
+        "customerRequest": {
+          "type": "string",
+          "description": "Specific customer requests",
+          "example": "Express service requested",
+          "max_length": 200
+        },
+        "serialNumberOrImei": {
+          "type": "string",
+          "description": "Device IMEI or serial number",
+          "example": "352033112345678",
+          "max_length": 50
+        },
+        "client": {
+          "type": "object",
+          "description": "Customer details (empty for voice bookings)",
+          "default": {},
+          "note": "Voice assistant doesn't collect customer info"
+        }
+      }
+    },
+    
+    "update_ticket": {
+      "endpoint": "PUT /YOUR_SHOP_API_PATH",
+      "method": "PUT",
+      "updatable_fields": {
+        "id": {
+          "type": "integer",
+          "description": "Ticket ID to update",
+          "required": true,
+          "example": 1226
+        },
+        "deviceModel": {
+          "type": "string",
+          "description": "Update device model",
+          "example": "Galaxy S22"
+        },
+        "deviceBrand": {
+          "type": "string",
+          "description": "Update device brand",
+          "example": "Samsung"
+        },
+        "deviceLocation": {
+          "type": "enum",
+          "description": "Move device to different location",
+          "allowed_values": ["IN_THE_FRONT", "IN_THE_BACK", "IN_THE_LAB", "AT_THE_FRONT", "With customer"],
+          "example": "IN_THE_BACK"
+        },
+        "problemExplanation": {
+          "type": "string",
+          "description": "Update problem description",
+          "example": "Screen and battery replacement"
+        },
+        "notes": {
+          "type": "string",
+          "description": "Add or update notes",
+          "example": "Customer called - urgent repair needed",
+          "note": "This is commonly used by LLM to add information"
+        },
+        "totalPrice": {
+          "type": "float",
+          "description": "Set or update repair price",
+          "example": 75.50
+        },
+        "deposit": {
+          "type": "float",
+          "description": "Set or update deposit amount",
+          "example": 20.0
+        },
+        "deviceCondition": {
+          "type": "string",
+          "description": "Update device condition",
+          "example": "Good condition, minor wear"
+        },
+        "accessories": {
+          "type": "string",
+          "description": "Update accessories list",
+          "example": "Charger returned to customer"
+        },
+        "devicePassword": {
+          "type": "string",
+          "description": "Update device password",
+          "example": "5678"
+        },
+        "customerRequest": {
+          "type": "string",
+          "description": "Update customer request",
+          "example": "Changed to standard service"
+        }
+      }
+    },
+    
+    "ticket_status_changes": {
+      "start_ticket": {
+        "endpoint": "PUT /YOUR_SHOP_API_PATH",
+        "params": {"id": "integer"},
+        "description": "Mark ticket as IN_PROGRESS",
+        "example": {"id": 1226}
+      },
+      "complete_ticket": {
+        "endpoint": "PUT /YOUR_SHOP_API_PATH",
+        "params": {
+          "id": "integer",
+          "success": "boolean"
+        },
+        "description": "Mark ticket as FINISHED (success=true) or FAILED (success=false)",
+        "example": {"id": 1226, "success": true},
+        "note": "Ticket must be IN_PROGRESS first"
+      },
+      "collected_device": {
+        "endpoint": "PUT /YOUR_SHOP_API_PATH",
+        "params": {"id": "integer"},
+        "description": "Mark device as collected and create invoice",
+        "example": {"id": 1226},
+        "prerequisites": "Ticket must be FINISHED",
+        "side_effects": "Creates an invoice automatically"
+      },
+      "create_deposit": {
+        "endpoint": "PUT /YOUR_SHOP_API_PATH",
+        "params": {"id": "integer"},
+        "description": "Create deposit invoice",
+        "example": {"id": 1226},
+        "prerequisites": "Ticket must have deposit amount set"
+      }
+    }
+  },
+  
+  "inventory_operations": {
+    "use_parts": {
+      "endpoint": "POST /YOUR_SHOP_API_PATH",
+      "body": {
+        "ticketId": {
+          "type": "integer",
+          "description": "Ticket to add parts to",
+          "example": 1226,
+          "required": true
+        },
+        "itemId": {
+          "type": "integer",
+          "description": "Inventory item ID to use",
+          "example": 462,
+          "required": true,
+          "note": "Get from GET /YOUR_SHOP_API_PATH"
+        },
+        "quantity": {
+          "type": "integer",
+          "description": "Number of items to use",
+          "example": 1,
+          "required": true,
+          "min": 1
+        }
+      },
+      "error_500_note": "May require ticket to be IN_PROGRESS, or item must be in stock"
+    }
+  },
+  
+  "printing_operations": {
+    "print_ticket": {
+      "endpoint": "POST /YOUR_SHOP_API_PATH",
+      "params": {"ticketId": "integer"},
+      "returns": "application/pdf",
+      "description": "Generate ticket label PDF",
+      "example": {"ticketId": 1226},
+      "note": "Only works on shops with printer backend configured"
+    },
+    "print_repair_tag": {
+      "endpoint": "POST /YOUR_SHOP_API_PATH",
+      "params": {"ticketId": "integer"},
+      "returns": "application/pdf",
+      "description": "Generate repair tag PDF",
+      "example": {"ticketId": 1226}
+    },
+    "print_deposit_invoice": {
+      "endpoint": "GET /YOUR_SHOP_API_PATH",
+      "params": {"ticketId": "integer"},
+      "returns": "application/pdf",
+      "description": "Generate deposit invoice PDF",
+      "example": {"ticketId": 1226},
+      "prerequisites": "Deposit invoice must be created first (via deposit endpoint)"
+    },
+    "print_price_tag": {
+      "endpoint": "POST /YOUR_SHOP_API_PATH",
+      "params": {"itemId": "integer"},
+      "returns": "application/pdf",
+      "description": "Generate price tag for inventory item",
+      "example": {"itemId": 462}
+    }
+  },
+  
+  "common_enums": {
+    "ticket_status": {
+      "values": ["PENDING", "IN_PROGRESS", "FINISHED", "CANCELLED", "FROZEN"],
+      "descriptions": {
+        "PENDING": "New ticket, not started",
+        "IN_PROGRESS": "Worker is currently working on it",
+        "FINISHED": "Repair completed",
+        "CANCELLED": "Customer cancelled",
+        "FROZEN": "On hold (waiting for parts, customer approval, etc.)"
+      }
+    },
+    "device_locations": {
+      "values": [
+        "IN_THE_FRONT",
+        "IN_THE_BACK", 
+        "IN_THE_LAB",
+        "AT_THE_FRONT",
+        "With customer",
+        "Fonesmart",
+        "Sent To Charlshouse"
+      ],
+      "descriptions": {
+        "IN_THE_FRONT": "At front desk/counter",
+        "IN_THE_BACK": "In back storage area",
+        "IN_THE_LAB": "In repair workshop/lab",
+        "AT_THE_FRONT": "Same as IN_THE_FRONT",
+        "With customer": "Device is with the customer",
+        "Fonesmart": "Transferred to Fonesmart location",
+        "Sent To Charlshouse": "Sent to Charlshouse supplier"
+      }
+    }
+  },
+  
+  "llm_usage_notes": {
+    "ticket_creation_flow": [
+      "1. Extract brand, model, problem from user speech",
+      "2. Validate brand/model exist (optional but recommended)",
+      "3. Create ticket with PENDING status, deviceLocation=IN_THE_FRONT",
+      "4. Set withClient=false (device left at shop)",
+      "5. Include any additional info in notes field"
+    ],
+    "ticket_update_flow": [
+      "1. Search for ticket by brand/model or ID",
+      "2. Use PUT /YOUR_SHOP_API_PATH to add notes, prices, etc.",
+      "3. Common updates: notes (adding info), totalPrice, deposit, deviceLocation"
+    ],
+    "status_change_flow": [
+      "1. User says 'start working on Nokia': PUT /YOUR_SHOP_API_PATH",
+      "2. User says 'finished Samsung repair': PUT /YOUR_SHOP_API_PATH with success=true",
+      "3. User says 'customer collected': PUT /YOUR_SHOP_API_PATH (creates invoice)"
+    ],
+    "printing_flow": [
+      "1. User says 'print ticket' or 'print label': POST /YOUR_SHOP_API_PATH",
+      "2. Returns PDF - server handles actual printing to physical printer",
+      "3. Only works on production shops with printer backend"
+    ]
+  }
+}

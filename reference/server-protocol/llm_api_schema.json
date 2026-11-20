@@ -1,0 +1,193 @@
+{
+  "version": "1.0",
+  "base_url": "https://YOUR_PHONESHOP_API_HOST",
+  "authentication": "Bearer token (obtained via POST /YOUR_SHOP_API_PATH)",
+  
+  "endpoints": {
+    "ticket_search": {
+      "GET /YOUR_SHOP_API_PATH": {
+        "description": "Get all active/pending tickets",
+        "params": null,
+        "returns": "Array of ticket objects",
+        "use_case": "Search tickets, check status, find repairs"
+      },
+      "GET /YOUR_SHOP_API_PATH": {
+        "description": "Get specific ticket by ID",
+        "params": {"id": "integer"},
+        "returns": "Single ticket object",
+        "use_case": "Get details of known ticket"
+      }
+    },
+    
+    "ticket_management": {
+      "POST /YOUR_SHOP_API_PATH": {
+        "description": "Create new repair ticket",
+        "required": ["deviceBrand", "deviceModel", "problemExplanation"],
+        "optional": ["totalPrice", "deposit", "notes", "deviceCondition", "accessories"],
+        "defaults": {
+          "status": "PENDING",
+          "deviceLocation": "IN_THE_FRONT",
+          "withClient": false
+        },
+        "returns": "Created ticket with ID"
+      },
+      "PUT /YOUR_SHOP_API_PATH": {
+        "description": "Update ticket (add notes, set price, change location)",
+        "common_updates": ["notes", "totalPrice", "deposit", "deviceLocation"],
+        "all_fields_updatable": true
+      },
+      "PUT /YOUR_SHOP_API_PATH": {
+        "description": "Start working on ticket (status → IN_PROGRESS)",
+        "params": {"id": "integer"}
+      },
+      "PUT /YOUR_SHOP_API_PATH": {
+        "description": "Mark ticket finished or failed",
+        "params": {"id": "integer", "success": "boolean"}
+      }
+    },
+    
+    "inventory": {
+      "GET /YOUR_SHOP_API_PATH": {
+        "description": "Get all device brands with their models",
+        "returns": "Array of {id, value, models: [{id, value}]}",
+        "use_case": "Validate brand/model exists"
+      },
+      "GET /YOUR_SHOP_API_PATH": {
+        "description": "Get shop inventory (parts, devices for sale)",
+        "returns": "Paginated inventory items"
+      }
+    },
+    
+    "printing": {
+      "POST /YOUR_SHOP_API_PATH": {
+        "description": "Print ticket label (PDF)",
+        "params": {"ticketId": "integer"},
+        "returns": "PDF file",
+        "note": "Server handles physical printing"
+      },
+      "POST /YOUR_SHOP_API_PATH": {
+        "description": "Print repair tag (PDF)",
+        "params": {"ticketId": "integer"}
+      }
+    }
+  },
+  
+  "data_structures": {
+    "ticket": {
+      "id": "integer",
+      "deviceBrand": "string",
+      "deviceModel": "string",
+      "problemExplanation": "string",
+      "status": "PENDING | IN_PROGRESS | FINISHED | CANCELLED | FROZEN",
+      "deviceLocation": "IN_THE_FRONT | IN_THE_BACK | IN_THE_LAB | With customer",
+      "totalPrice": "float or null",
+      "deposit": "float or null",
+      "notes": "string or null",
+      "timestamp": "ISO8601 datetime",
+      "deadline": "ISO8601 datetime"
+    }
+  },
+  
+  "common_operations": {
+    "search_tickets": {
+      "description": "User asks 'what's my Samsung repair status?'",
+      "steps": [
+        "1. Call GET /YOUR_SHOP_API_PATH",
+        "2. Filter results by deviceBrand='Samsung'",
+        "3. Return ticket status and details"
+      ]
+    },
+    "create_ticket": {
+      "description": "User says 'book iPhone 12 for screen replacement'",
+      "steps": [
+        "1. Extract: brand='Apple', model='iPhone 12', problem='screen replacement'",
+        "2. Call POST /YOUR_SHOP_API_PATH with required fields",
+        "3. Confirm ticket number with user"
+      ]
+    },
+    "add_notes": {
+      "description": "User says 'add note to ticket 1226: customer wants express service'",
+      "steps": [
+        "1. Call PUT /YOUR_SHOP_API_PATH",
+        "2. Body: {notes: 'customer wants express service'}",
+        "3. Confirm update"
+      ]
+    },
+    "set_price": {
+      "description": "User says 'set price to 50 pounds for Nokia repair'",
+      "steps": [
+        "1. Search for Nokia ticket via GET /YOUR_SHOP_API_PATH",
+        "2. Call PUT /YOUR_SHOP_API_PATH",
+        "3. Body: {totalPrice: 50.0}"
+      ]
+    }
+  },
+  
+  "field_constraints": {
+    "status_values": ["PENDING", "IN_PROGRESS", "FINISHED", "CANCELLED", "FROZEN"],
+    "location_values": [
+      "IN_THE_FRONT",
+      "IN_THE_BACK",
+      "IN_THE_LAB",
+      "AT_THE_FRONT",
+      "With customer",
+      "Fonesmart",
+      "Sent To Charlshouse"
+    ],
+    "timestamp_format": "YYYY-MM-DDTHH:mm:ss.SSSZ (UTC with milliseconds)"
+  },
+  
+  "api_call_rules": {
+    "read_operations": {
+      "methods": ["GET"],
+      "safe": true,
+      "examples": ["search tickets", "get ticket status", "list inventory"],
+      "confirmation_required": false
+    },
+    "write_operations": {
+      "methods": ["POST", "PUT", "PATCH"],
+      "safe": false,
+      "examples": ["create ticket", "update price", "mark completed"],
+      "confirmation_required": true,
+      "note": "Always ask user to confirm before executing"
+    },
+    "printing_operations": {
+      "methods": ["POST", "GET"],
+      "returns": "PDF",
+      "examples": ["print ticket", "print invoice"],
+      "confirmation_required": true
+    }
+  },
+  
+  "example_ticket": {
+    "id": 1227,
+    "deviceBrand": "Nokia",
+    "deviceModel": "Lumia",
+    "deviceLocation": "IN_THE_FRONT",
+    "problemExplanation": "back camera repair",
+    "status": "PENDING",
+    "totalPrice": null,
+    "deposit": null,
+    "notes": null,
+    "timestamp": "2025-11-07T23:02:27.816Z",
+    "deadline": "2025-11-08T00:02:27.816Z",
+    "withClient": false
+  },
+  
+  "usage_notes": {
+    "for_llm": [
+      "Call GET endpoints to search/retrieve data (no confirmation needed)",
+      "For POST/PUT operations, extract parameters and ask user to confirm",
+      "Include conversation history when making API calls for context",
+      "If multiple tickets match, ask user to clarify which one",
+      "Always validate brand/model exist before creating tickets",
+      "Use notes field to add any additional information from conversation"
+    ],
+    "error_handling": [
+      "403 Forbidden: User lacks permissions (explain to user)",
+      "404 Not Found: Ticket/item doesn't exist (search again or create)",
+      "400 Bad Request: Missing required fields or invalid values",
+      "500 Server Error: Report to user, suggest retry"
+    ]
+  }
+}

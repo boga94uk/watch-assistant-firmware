@@ -1,0 +1,4 @@
+description: ESP LCD SH8601 (QSPI), vendored from the board kit
+version: 1.0.0
+dependencies:
+  idf: ">=5.4"

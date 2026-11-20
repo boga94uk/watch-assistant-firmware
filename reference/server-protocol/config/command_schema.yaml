@@ -1,0 +1,163 @@
+# Unified Command Schema
+# All command structures, requirements, and API mappings in one place
+
+commands:
+  # === BOOKING COMMANDS ===
+  book:
+    description: "Book a device for repair"
+    required_params:
+      - brand
+      - model
+      - problem
+    optional_params:
+      - totalPrice
+      - deposit
+      - deviceCondition
+      - accessories
+      - devicePassword
+      - notes
+    api_endpoint: "/YOUR_SHOP_API_PATH"
+    api_method: "POST"
+    requires_confirmation: true
+    confirmation_template: "Confirm booking {brand} {model}{price_text} for {problem}?"
+    success_message: "Ticket created successfully"
+    auto_print: true
+    
+  # === SALES COMMANDS ===
+  sell:
+    description: "Create invoice for device sale"
+    required_params:
+      - brand
+      - model
+      - storage
+      - color
+      - price
+    optional_params:
+      - serialNumberOrImei
+      - notes
+    api_endpoint: "/YOUR_SHOP_API_PATH"
+    api_method: "POST"
+    requires_confirmation: true
+    confirmation_template: "Confirm: Sell {brand} {model} {storage} {color} for £{price}?"
+    success_message: "Invoice created successfully"
+    auto_print: true
+    
+  invoice:
+    description: "Create invoice (alias for sell)"
+    required_params:
+      - brand
+      - model
+      - price
+    optional_params:
+      - storage
+      - color
+      - serialNumberOrImei
+      - notes
+    api_endpoint: "/YOUR_SHOP_API_PATH"
+    api_method: "POST"
+    requires_confirmation: true
+    confirmation_template: "Confirm invoice for {brand} {model} at £{price}?"
+    success_message: "Invoice created successfully"
+    auto_print: true
+  
+  # === TICKET MANAGEMENT (REGEX-BASED - SIMPLE MUTATIONS) ===
+  ticket_start:
+    description: "Start work on a ticket"
+    pattern: 'ticket\s+(\d+)\s+(?:start|started|begin)'
+    required_params:
+      - ticket_id
+    api_endpoint: "/YOUR_SHOP_API_PATH?id={ticket_id}"
+    api_method: "PUT"
+    requires_confirmation: true
+    confirmation_template: "Start work on ticket {ticket_id}?"
+    success_message: "Ticket {ticket_id} started"
+
+  ticket_complete:
+    description: "Mark ticket as completed"
+    pattern: 'ticket\s+(\d+)\s+(?:complete|completed|fixed|done|finish)'
+    required_params:
+      - ticket_id
+    api_endpoint: "/YOUR_SHOP_API_PATH?id={ticket_id}"
+    api_method: "PUT"
+    requires_confirmation: true
+    confirmation_template: "Complete ticket {ticket_id}?"
+    success_message: "Ticket {ticket_id} completed"
+
+  ticket_unfixable:
+    description: "Mark ticket as unfixable"
+    pattern: 'ticket\s+(\d+)\s+(?:unfixable|cannot\s+fix|can''t\s+fix)'
+    required_params:
+      - ticket_id
+    api_endpoint: "/YOUR_SHOP_API_PATH?id={ticket_id}"
+    api_method: "PUT"
+    requires_confirmation: true
+    confirmation_template: "Mark ticket {ticket_id} as unfixable?"
+    success_message: "Ticket {ticket_id} marked as unfixable"
+
+  ticket_collected:
+    description: "Mark ticket as collected"
+    pattern: 'ticket\s+(\d+)\s+(?:collected|picked\s+up)'
+    required_params:
+      - ticket_id
+    api_endpoint: "/YOUR_SHOP_API_PATH?id={ticket_id}"
+    api_method: "PUT"
+    requires_confirmation: true
+    confirmation_template: "Mark ticket {ticket_id} as collected?"
+    success_message: "Ticket {ticket_id} marked as collected"
+
+  ticket_freeze:
+    description: "Freeze ticket (pause work)"
+    pattern: 'ticket\s+(\d+)\s+(?:freeze|pause|hold)'
+    required_params:
+      - ticket_id
+    api_endpoint: "/YOUR_SHOP_API_PATH?id={ticket_id}"
+    api_method: "PUT"
+    requires_confirmation: true
+    confirmation_template: "Freeze ticket {ticket_id}?"
+    success_message: "Ticket {ticket_id} frozen"
+
+  ticket_cancel:
+    description: "Cancel ticket"
+    pattern: 'ticket\s+(\d+)\s+(?:cancel|cancelled)'
+    required_params:
+      - ticket_id
+    api_endpoint: "/YOUR_SHOP_API_PATH?id={ticket_id}"
+    api_method: "PUT"
+    requires_confirmation: true
+    confirmation_template: "Cancel ticket {ticket_id}?"
+    success_message: "Ticket {ticket_id} cancelled"
+  
+  ticket_add_note:
+    description: "Add note to ticket"
+    required_params:
+      - ticket_id
+      - note
+    api_endpoint: "/YOUR_SHOP_API_PATH"
+    api_method: "POST"
+    requires_confirmation: false
+    success_message: "Note added to ticket {ticket_id}"
+
+# === ALLOWED VALUES FOR VALIDATION ===
+allowed_values:
+  deviceCondition:
+    - "Cracked Screen"
+    - "Cracked Back"
+    - "Dead device"
+    - "Faulty SIM Tray"
+    - "Faulty Volume Button"
+    - "Faulty Power Button"
+    - "Liquid Damage"
+    - "Dented"
+    - "Bent"
+    - "Scratched"
+    
+  accessories:
+    - "With Case"
+    - "With Charger"
+    - "With Cable"
+    - "With Earphones"
+    - "With Box"
+    - "With Bag"
+    - "Memory Card"
+    - "SIM Card"
+    - "Screen Protector"

@@ -1,0 +1,34 @@
+# Build and IDF generated
+firmware/build/
+firmware/sdkconfig
+firmware/sdkconfig.old
+firmware/managed_components/
+firmware/dependencies.lock.bak
+logs/
+
+# Python
+**/__pycache__/
+**/.venv/
+*.pyc
+tts/.venv/
+
+# Secrets and local keys
+secrets/**
+!secrets/INSTRUCTIONS.txt
+**/*.pem
+**/*.key
+**/openai*.txt
+**/device_secret*
+
+# Editor / OS
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini
+*.log
+
+# Audio scratch
+*.wav
+!firmware/spiffs/*.wav
+!reference/**/*.wav
+!tts/selftest.wav

@@ -1,0 +1,33 @@
+server:
+  host: "0.0.0.0"
+  port: 8080
+  debug: false  # Set to true for development, false for production
+  request_timeout: 90  # Maximum request duration in seconds
+
+openai:
+  model: "gpt-4o-mini"
+  whisper_model: "whisper-1"
+  tts_model: "tts-1"
+  tts_voice: "alloy"
+  max_tokens: 200
+  temperature: 0.7
+
+phoneshop:
+  base_url: "https://YOUR_PHONESHOP_API_HOST"
+  timeout: 10
+
+printer:
+  enabled: true
+  auto_print_invoices: true
+
+logging:
+  level: "INFO"
+  file: "logs/server.log"
+  max_bytes: 10485760
+  backup_count: 5
+
+audio:
+  temp_dir: "audio_temp"
+  max_duration: 60
+  format: "wav"
+  sample_rate: 16000
